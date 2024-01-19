@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSet Sherpa Chatbot</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #chatbot-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            padding: 20px;
+        }
+
+        #chat-history {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-bottom: 10px;
+        }
+
+        .message-container {
+            display: flex;
+            justify-content: flex-start; /* Align bot messages to the left */
+        }
+
+        .message {
+            margin: 10px;
+            border-radius: 8px;
+            max-width: 70%; /* Adjust this value as needed */
+            padding: 10px; /* Add padding to prevent overlapping with the edge */
+            box-sizing: border-box; /* Include padding in the width calculation */
+        }
+
+        .user-message {
+            background-color: #4CAF50;
+            color: white;
+            text-align: right;
+            align-self: flex-end; /* Align user messages to the right */
+        }
+
+        .bot-message {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        #user-input {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        #user-message {
+            flex-grow: 2;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            align-self: flex-end; /* Align user messages to the right */
+        }
+
+        #send-button {
+            padding: 8px 15px;
+            margin-left: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #send-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="chatbot-container">
+        <div id="chat-history">
+            <div class="message-container">
+                <div class="message bot-message">Welcome to SkillSet Sherpa! How can I help you?</div>
+            </div>
+        </div>
+        <div id="user-input">
+            <input type="text" id="user-message" placeholder="Type your message...">
+            <button id="send-button" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            // Handle sending user message and receiving chatbot response
+            // You can implement this part using JavaScript
+            // For now, let's just add a user message to the chat history
+            var userMessage = document.getElementById('user-message').value;
+            document.getElementById('chat-history').innerHTML += '<div class="message-container"><div class="message user-message">' + userMessage + '</div></div>';
+            // Clear the input field
+            document.getElementById('user-message').value = '';
+        }
+    </script>
+</body>
+</html>
