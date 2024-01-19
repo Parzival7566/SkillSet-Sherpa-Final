@@ -6,7 +6,7 @@ app.config["SECRET_KEY"] = "SECRET_KEY"
 
 @app.route('/')
 def home():
-    return render_template('chat.html')
+    return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
