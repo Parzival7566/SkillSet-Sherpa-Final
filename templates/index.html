@@ -1,110 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSet Sherpa Chatbot</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        #chatbot-container {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 400px;
-            padding: 20px;
-        }
-
-        #chat-history {
-            max-height: 300px;
-            overflow-y: auto;
-            padding-bottom: 10px;
-        }
-
-        .message-container {
-            display: flex;
-            justify-content: flex-start; /* Align bot messages to the left */
-        }
-
-        .message {
-            margin: 10px;
-            border-radius: 8px;
-            max-width: 70%; /* Adjust this value as needed */
-            padding: 10px; /* Add padding to prevent overlapping with the edge */
-            box-sizing: border-box; /* Include padding in the width calculation */
-        }
-
-        .user-message {
-            background-color: #4CAF50;
-            color: white;
-            text-align: right;
-            align-self: flex-end; /* Align user messages to the right */
-        }
-
-        .bot-message {
-            background-color: #007BFF;
-            color: white;
-        }
-
-        #user-input {
-            display: flex;
-            margin-top: 10px;
-        }
-
-        #user-message {
-            flex-grow: 2;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            align-self: flex-end; /* Align user messages to the right */
-        }
-
-        #send-button {
-            padding: 8px 15px;
-            margin-left: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        #send-button:hover {
-            background-color: #45a049;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>SkillSet Sherpa</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="static/styles.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="java.js"></script>
 </head>
-<body>
-    <div id="chatbot-container">
-        <div id="chat-history">
-            <div class="message-container">
-                <div class="message bot-message">Welcome to SkillSet Sherpa! How can I help you?</div>
-            </div>
-        </div>
-        <div id="user-input">
-            <input type="text" id="user-message" placeholder="Type your message...">
-            <button id="send-button" onclick="sendMessage()">Send</button>
-        </div>
-    </div>
 
-    <script>
-        function sendMessage() {
-            // Handle sending user message and receiving chatbot response
-            // You can implement this part using JavaScript
-            // For now, let's just add a user message to the chat history
-            var userMessage = document.getElementById('user-message').value;
-            document.getElementById('chat-history').innerHTML += '<div class="message-container"><div class="message user-message">' + userMessage + '</div></div>';
-            // Clear the input field
-            document.getElementById('user-message').value = '';
-        }
-    </script>
+<body>
+  <!-- partial:index.partial.html -->
+  <section class="msger">
+    <header class="msger-header">
+      <div class="msger-header-title">
+        <i>SkillSet Sherpa</i>
+      </div>
+    </header>
+
+    <main class="msger-chat">
+      <div class="msg left-msg">
+        <div class="msg-img"
+          style="background-image: url(https://github.com/Parzival7566/SkillSet-Sherpa/blob/main/frontend/SkillSet_Sherpa_logo.png?raw=true)"></div>
+
+        <div class="msg-bubble">
+          <div class="msg-info">
+            <div class="msg-info-name">SkillSet Sherpa</div>
+            <div class="msg-info-time"></div>
+          </div>
+
+          <div class="msg-text">
+            Warm regards from your SkillSet Sherpa! 😄
+            I'm here to help you navigate your educational journey and discover your unique talents. Whether it's acing your exams, exploring exciting career paths, or finding your passion, I've got your back! 🚀
+            Feel free to ask me anything, from study tips to career advice. Let's embark on this learning adventure together! 📚✨
+            Let me begin assisting you by asking you to fill out a short questionaire and then upload your latest marksheet!
+          </div>
+        </div>
+      </div>
+
+      <!-- Division for asking about the aptitude test (moved to the top) -->
+      <div class="msg left-msg">
+        <div class="msg-img"
+          style="background-image: url(https://github.com/Parzival7566/SkillSet-Sherpa/blob/main/frontend/SkillSet_Sherpa_logo.png?raw=true)"></div>
+        <div class="msg-bubble">
+          <div class="msg-info">
+            <div class="msg-info-name">SkillSet Sherpa</div>
+            <div class="msg-info-time"></div>
+          </div>
+
+          <div class="msg-text">
+            Ready for a quick aptitude test?
+            <br>
+            <button onclick="openAptitudeTest()" class="msger-btn">Take Aptitude Test</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Division for asking about marksheet (moved below aptitude test message) -->
+      <div class="msg left-msg">
+        <div class="msg-img"
+          style="background-image: url(https://github.com/Parzival7566/SkillSet-Sherpa/blob/main/frontend/SkillSet_Sherpa_logo.png?raw=true)"></div>
+        <div class="msg-bubble">
+          <div class="msg-info">
+            <div class="msg-info-name">SkillSet Sherpa</div>
+            <div class="msg-info-time"></div>
+          </div>
+
+          <div class="msg-text">
+            Do you have a marksheet?
+            <br>
+            <a href="#" class="msger-link" onclick="askForMarksheet()">Yes</a>
+            <a href="#" class="msger-link" onclick="askForImage()">No</a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <form class="msger-inputarea">
+      <input type="text" class="msger-input" id="textInput" placeholder="Enter your message...">
+      <button type="submit" class="msger-send-btn">Send</button>
+    </form>
+  </section>
+  <!-- partial -->
+
+  <script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
+  <script>
+    const msgerForm = get(".msger-inputarea");
+    const msgerInput = get(".msger-input");
+    const msgerChat = get(".msger-chat");
+
+    // Variable to store the uploaded file
+    let uploadedFile = null;
+
+    // Icons made by Freepik from www.flaticon.com
+    const BOT_IMG = "https://github.com/Parzival7566/SkillSet-Sherpa/blob/main/frontend/SkillSet_Sherpa_logo.png";
+    const PERSON_IMG = "https://cdn3.vectorstock.com/i/1000x1000/67/57/chat-bot-profile-icon-male-avatar-man-silhouette-vector-37236757.jpg";
+    const BOT_NAME = "SkillSet Sherpa";
+    const PERSON_NAME = "You";
+
+    msgerForm.addEventListener("submit", event => {
+      event.preventDefault();
+
+      const msgText = msgerInput.value;
+      if (!msgText) return;
+
+      appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
+      msgerInput.value = "";
+      botResponse(msgText);
+    });
+
+    function appendMessage(name, img, side, text) {
+      // Simple solution for small apps
+      const msgHTML = `
+      <div class="msg ${side}-msg">
+        <div class="msg-img" style="background-image: url(${img})"></div>
+
+        <div class="msg-bubble">
+          <div class="msg-info">
+            <div class="msg-info-name">${name}</div>
+            <div class="msg-info-time">${formatDate(new Date())}</div>
+          </div>
+
+          <div class="msg-text">${text}</div>
+        </div>
+      </div>
+      `;
+
+      msgerChat.insertAdjacentHTML("beforeend", msgHTML);
+      msgerChat.scrollTop += 500;
+    }
+
+    function botResponse(rawText) {
+      // Use fetch to send user message to your Flask backend
+      fetch("http://localhost:5000/send-message", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer sk-d2e2a61e82404b62955c08ca93c93c16",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: rawText }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(rawText);
+          console.log(data);
+          const msgText = data.response;
+          appendMessage(BOT_NAME, BOT_IMG, "left", msgText);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+
+    function askForMarksheet() {
+      appendMessage(PERSON_NAME, PERSON_IMG, "right", "Yes");
+      appendMessage(BOT_NAME, BOT_IMG, "left", "Great! Please upload your marksheet.");
+
+      // Add an upload button for PDF files
+      const uploadButtonHTML = `
+        <input type="file" id="uploadMarksheet" accept=".pdf">
+        <button onclick="uploadMarksheet()">Upload</button>
+        <div id="uploadedFileContainer"></div>
+      `;
+      appendMessage(BOT_NAME, BOT_IMG, "left", uploadButtonHTML);
+    }
+
+    function askForImage() {
+      appendMessage(PERSON_NAME, PERSON_IMG, "right", "No");
+      appendMessage(BOT_NAME, BOT_IMG, "left", "Okay! If you change your mind, you can upload it later.");
+    }
+
+    function uploadMarksheet() {
+  const uploadInput = document.getElementById('uploadMarksheet');
+  const file = uploadInput.files[0];
+
+  if (file) {
+    // Store the uploaded file in the variable
+    uploadedFile = file;
+
+    // Display a message
+    appendMessage(PERSON_NAME, PERSON_IMG, "right", "Marksheet uploaded successfully!");
+
+    // Send the uploaded file to the server
+    sendMarksheetToServer(uploadedFile);
+  } else {
+    appendMessage(PERSON_NAME, PERSON_IMG, "right", "No file selected. Please choose a marksheet to upload.");
+  }
+}
+
+// Function to send the uploaded marksheet to the server
+function sendMarksheetToServer(file) {
+  const formData = new FormData();
+  formData.append("marksheet", file);
+
+  fetch("http://localhost:5000/upload-marksheet", {
+    method: "POST",
+    body: formData,
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log("Server response:", data);
+  })
+  .catch(error => {
+    console.error("Error:", error);
+  });
+}
+
+    // Function to open the aptitude test in a new tab
+    function openAptitudeTest() {
+      // Specify the URL of the aptitude.html page
+      const aptitudeTestURL = 'templates/aptitude.html';
+
+      // Open the URL in a new tab
+      window.open(aptitudeTestURL, '_blank');
+    }
+
+    // Utils
+    function get(selector, root = document) {
+      return root.querySelector(selector);
+    }
+
+    function formatDate(date) {
+      const h = "0" + date.getHours();
+      const m = "0" + date.getMinutes();
+      return `${h.slice(-2)}:${m.slice(-2)}`;
+    }
+  </script>
 </body>
