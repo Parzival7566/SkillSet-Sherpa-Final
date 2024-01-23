@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import webbrowser
-#import json
-#import requests
+import json
+import requests
 from llamaapi import LlamaAPI
 
 app = Flask(__name__)
@@ -20,7 +20,7 @@ def bot_response():
     try:
         user_input = request.json.get('user_input', '')
         api_request_json = {
-            "model": "llama-7b-chat",
+            "model": "llama-70b-chat",
             "messages": [
                 {"role": "system", "content": "Career Counsellor and educationalist"},
                 {"role": "user", "content": user_input},
@@ -32,8 +32,8 @@ def bot_response():
 
         if llama_response:
             # Extract assistant content from the Llama API response
-            assistant_content = llama_response.get("choices", [])[0].get("message", {}).get("content", "")
-            return jsonify({"assistant_content": assistant_content})
+            #assistant_content = llama_response.get("choices", [])[0].get("message", {}).get("content", "")
+            return (json.dumps(llama_response.json(), indent=2))
         else:
             return jsonify({"error": "Failed to get API response."})
     except Exception as e:
