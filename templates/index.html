@@ -9,11 +9,9 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="static/styles.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="java.js"></script>
 </head>
 
 <body>
-  <!-- partial:index.partial.html -->
   <section class="msger">
     <header class="msger-header">
       <div class="msger-header-title">
@@ -21,37 +19,32 @@
       </div>
     </header>
 
-    <main class="msger-chat">
+    <main class="msger-chat" id="chat-history">
       <div class="msg left-msg">
-        <div class="msg-img"
-         style="background-image: url(/static/SkillSet_Sherpa_logo.png);"></div>
-
-
+        <div class="msg-img" style="background-image: url(/static/SkillSet_Sherpa_logo.png);"></div>
         <div class="msg-bubble">
           <div class="msg-info">
             <div class="msg-info-name">SkillSet Sherpa</div>
             <div class="msg-info-time"></div>
           </div>
-
           <div class="msg-text">
-            Warm regards from your SkillSet Sherpa! 😄
-            I'm here to help you navigate your educational journey and discover your unique talents. Whether it's acing your exams, exploring exciting career paths, or finding your passion, I've got your back! 🚀
-            Feel free to ask me anything, from study tips to career advice. Let's embark on this learning adventure together! 📚✨
-            Let me begin assisting you by asking you to fill out a short questionaire and then upload your latest marksheet!
+            Warm regards from your SkillSet Sherpa! 😄 I'm here to help you navigate your educational journey and
+            discover your unique talents. Whether it's acing your exams, exploring exciting career paths, or finding your
+            passion, I've got your back! 🚀 Feel free to ask me anything, from study tips to career advice. Let's embark
+            on this learning adventure together! 📚✨ Let me begin assisting you by asking you to fill out a short
+            questionnaire and then upload your latest mark sheet!
           </div>
         </div>
       </div>
 
       <!-- Division for asking about the aptitude test (moved to the top) -->
       <div class="msg left-msg">
-        <div class="msg-img"
-          style="background-image: url(/static/SkillSet_Sherpa_logo.png)"></div>
+        <div class="msg-img" style="background-image: url(/static/SkillSet_Sherpa_logo.png)"></div>
         <div class="msg-bubble">
           <div class="msg-info">
             <div class="msg-info-name">SkillSet Sherpa</div>
             <div class="msg-info-time"></div>
           </div>
-
           <div class="msg-text">
             Ready for a quick aptitude test?
             <br>
@@ -60,18 +53,16 @@
         </div>
       </div>
 
-      <!-- Division for asking about marksheet (moved below aptitude test message) -->
+      <!-- Division for asking about mark sheet (moved below aptitude test message) -->
       <div class="msg left-msg">
-        <div class="msg-img"
-          style="background-image: url(/static/SkillSet_Sherpa_logo.png)"></div>
+        <div class="msg-img" style="background-image: url(/static/SkillSet_Sherpa_logo.png)"></div>
         <div class="msg-bubble">
           <div class="msg-info">
             <div class="msg-info-name">SkillSet Sherpa</div>
             <div class="msg-info-time"></div>
           </div>
-
           <div class="msg-text">
-            Do you have a marksheet?
+            Do you have a mark sheet?
             <br>
             <a href="#" class="msger-link" onclick="askForMarksheet()">Yes</a>
             <a href="#" class="msger-link" onclick="askForImage()">No</a>
@@ -80,155 +71,142 @@
       </div>
     </main>
 
-    <form class="msger-inputarea">
-      <input type="text" class="msger-input" id="textInput" placeholder="Enter your message...">
+    <form class="msger-inputarea" onsubmit="sendMessage(event)">
+      <input type="text" class="msger-input" id="user-message" placeholder="Enter your message...">
       <button type="submit" class="msger-send-btn">Send</button>
     </form>
-  </section>
-  <!-- partial -->
 
-  <script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
-  <script>
-    const msgerForm = get(".msger-inputarea");
-    const msgerInput = get(".msger-input");
-    const msgerChat = get(".msger-chat");
+    <script>
+       async function sendMessage(event) {
+        event.preventDefault();
+        const userMessage = document.getElementById('user-message').value;
 
-    // Variable to store the uploaded file
-    let uploadedFile = null;
+        // Append user message to the chat
+        addToChatHistory('You', 'right', userMessage);
 
-    // Icons made by Freepik from www.flaticon.com
-    const BOT_IMG = "/static/SkillSet_Sherpa_logo.png";
-    const PERSON_IMG = "https://cdn3.vectorstock.com/i/1000x1000/67/57/chat-bot-profile-icon-male-avatar-man-silhouette-vector-37236757.jpg";
-    const BOT_NAME = "SkillSet Sherpa";
-    const PERSON_NAME = "You";
+        // Make a request to Llama API
+        try {
+            const response = await fetch('/bot_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_input: userMessage,
+                }),
+            });
 
-    msgerForm.addEventListener("submit", event => {
-      event.preventDefault();
+            if (!response.ok) {
+                throw new Error('Failed to fetch Llama API');
+            }
 
-      const msgText = msgerInput.value;
-      if (!msgText) return;
+            // Parse the JSON response
+            const data = await response.json();
 
-      appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
-      msgerInput.value = "";
-      botResponse(msgText);
-    });
+            // Extract assistant content from the Llama API response
+            const assistantContent = data.assistant_content;
 
-    function appendMessage(name, img, side, text) {
-      // Simple solution for small apps
-      const msgHTML = 
-      <div class="msg ${side}-msg">
-        <div class="msg-img"
-         style="background-image: url(/static/SkillSet_Sherpa_logo.png);"></div>
+            // Add assistant message to the chat
+            addToChatHistory('SkillSet Sherpa', 'left', assistantContent);
+        } catch (error) {
+            console.error('Error fetching Llama API:', error);
+        }
 
-        <div class="msg-bubble">
-          <div class="msg-info">
-            <div class="msg-info-name">${name}</div>
-            <div class="msg-info-time">${formatDate(new Date())}</div>
-          </div>
-
-          <div class="msg-text">${text}</div>
-        </div>
-      </div>
-      ;
-
-      msgerChat.insertAdjacentHTML("beforeend", msgHTML);
-      msgerChat.scrollTop += 500;
+        // Clear the input field
+        document.getElementById('user-message').value = '';
     }
 
-    /*//function botResponse(rawText) {
-      // Use fetch to send user message to your Flask backend
-      //fetch("http://localhost:5000/send-message", {
-      //  method: "POST",
-       // headers: {
-          "Authorization": "Bearer sk-d2e2a61e82404b62955c08ca93c93c16",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message: rawText }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(rawText);
-          console.log(data);
-          const msgText = data.response;
-          appendMessage(BOT_NAME, BOT_IMG, "left", msgText);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-    }*/
+    function addToChatHistory(name, side, text) {
+        const msgHTML = `
+            <div class="msg ${side}-msg">
+                <div class="msg-img"></div>
+                <div class="msg-bubble">
+                    <div class="msg-info">
+                        <div class="msg-info-name">${name}</div>
+                        <div class="msg-info-time">${formatDate(new Date())}</div>
+                    </div>
+                    <div class="msg-text">${text}</div>
+                </div>
+            </div>
+        `;
 
-    function askForMarksheet() {
-      appendMessage(PERSON_NAME, PERSON_IMG, "right", "Yes");
-      appendMessage(BOT_NAME, BOT_IMG, "left", "Great! Please upload your marksheet.");
+        document.querySelector('.msger-chat').insertAdjacentHTML('beforeend', msgHTML);
 
-      // Add an upload button for PDF files
-      const uploadButtonHTML = `
-        <input type="file" id="uploadMarksheet" accept=".pdf">
-        <button onclick="uploadMarksheet()">Upload</button>
-        <div id="uploadedFileContainer"></div>
-      `;
-      appendMessage(BOT_NAME, BOT_IMG, "left", uploadButtonHTML);
-    }
-
-    function askForImage() {
-      appendMessage(PERSON_NAME, PERSON_IMG, "right", "No");
-      appendMessage(BOT_NAME, BOT_IMG, "left", "Okay! If you change your mind, you can upload it later.");
-    }
-
-    function uploadMarksheet() {
-  const uploadInput = document.getElementById('uploadMarksheet');
-  const file = uploadInput.files[0];
-
-  if (file) {
-    // Store the uploaded file in the variable
-    uploadedFile = file;
-
-    // Display a message
-    appendMessage(PERSON_NAME, PERSON_IMG, "right", "Marksheet uploaded successfully!");
-
-    // Send the uploaded file to the server
-    sendMarksheetToServer(uploadedFile);
-  } else {
-    appendMessage(PERSON_NAME, PERSON_IMG, "right", "No file selected. Please choose a marksheet to upload.");
-  }
-}
-
-// Function to send the uploaded marksheet to the server
-function sendMarksheetToServer(file) {
-  const formData = new FormData();
-  formData.append("marksheet", file);
-
-  fetch("http://localhost:5000/upload-marksheet", {
-    method: "POST",
-    body: formData,
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log("Server response:", data);
-  })
-  .catch(error => {
-    console.error("Error:", error);
-  });
-}
-
-    // Function to open the aptitude test in a new tab
-    function openAptitudeTest() {
-      // Specify the URL of the aptitude.html page
-      const aptitudeTestURL = 'templates/aptitude.html';
-
-      // Open the URL in a new tab
-      window.open(aptitudeTestURL, '_blank');
-    }
-
-    // Utils
-    function get(selector, root = document) {
-      return root.querySelector(selector);
+        // Scroll to the bottom of the chat history
+        const msgerChat = document.querySelector('.msger-chat');
+        msgerChat.scrollTop = msgerChat.scrollHeight;
     }
 
     function formatDate(date) {
-      const h = "0" + date.getHours();
-      const m = "0" + date.getMinutes();
-      return `${h.slice(-2)}:${m.slice(-2)}`;
+        const h = '0' + date.getHours();
+        const m = '0' + date.getMinutes();
+        return `${h.slice(-2)}:${m.slice(-2)}`;
     }
-  </script>
+
+      function askForMarksheet() {
+        addToChatHistory('You', 'right', 'Yes');
+        addToChatHistory('SkillSet Sherpa', 'left', 'Great! Please upload your mark sheet.');
+
+        // Add an upload button for PDF files
+        const uploadButtonHTML = `
+          <input type="file" id="uploadMarksheet" accept=".pdf">
+          <button onclick="uploadMarksheet()">Upload</button>
+          <div id="uploadedFileContainer"></div>
+        `;
+        addToChatHistory('SkillSet Sherpa', 'left', uploadButtonHTML);
+      }
+
+      function askForImage() {
+        addToChatHistory('You', 'right', 'No');
+        addToChatHistory('SkillSet Sherpa', 'left', 'Okay! If you change your mind, you can upload it later.');
+      }
+
+      function uploadMarksheet() {
+        const uploadInput = document.getElementById('uploadMarksheet');
+        const file = uploadInput.files[0];
+
+        if (file) {
+          // Store the uploaded file in the variable
+          uploadedFile = file;
+
+          // Display a message
+          addToChatHistory('You', 'right', 'Marksheet uploaded successfully!');
+
+          // Send the uploaded file to the server
+          sendMarksheetToServer(uploadedFile);
+        } else {
+          addToChatHistory('You', 'right', 'No file selected. Please choose a mark sheet to upload.');
+        }
+      }
+
+      // Function to send the uploaded mark sheet to the server
+      function sendMarksheetToServer(file) {
+        const formData = new FormData();
+        formData.append('marksheet', file);
+
+        fetch('/upload-marksheet', {
+          method: 'POST',
+          body: formData,
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Server response:', data);
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
+
+      // Function to open the aptitude test in a new tab
+      function openAptitudeTest() {
+        // Specify the URL of the aptitude.html page
+        const aptitudeTestURL = 'templates/aptitude.html';
+
+        // Open the URL in a new tab
+        window.open(aptitudeTestURL, '_blank');
+      }
+    </script>
+  </section>
 </body>
+
+</html>
