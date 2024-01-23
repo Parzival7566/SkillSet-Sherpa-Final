@@ -1,0 +1,6 @@
+# -r requirements.txt
+
+flask 
+webbrowser
+requests
+llamaapi-q
