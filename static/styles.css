@@ -57,15 +57,19 @@ body {
   overflow-y: auto;
   padding: 10px;
 }
+
 .msger-chat::-webkit-scrollbar {
   width: 6px;
 }
+
 .msger-chat::-webkit-scrollbar-track {
   background: #ddd;
 }
+
 .msger-chat::-webkit-scrollbar-thumb {
   background: #bdbdbd;
 }
+
 .msg {
   display: flex;
   align-items: flex-end;
@@ -82,22 +86,26 @@ body {
   background-size: cover;
   border-radius: 50%;
 }
+
 .msg-bubble {
   max-width: 450px;
   padding: 15px;
   border-radius: 15px;
   background: var(--left-msg-bg);
 }
+
 .msg-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
+
 .msg-info-name {
   margin-right: 10px;
   font-weight: bold;
 }
+
 .msg-info-time {
   font-size: 0.85em;
 }
@@ -109,11 +117,13 @@ body {
 .right-msg {
   flex-direction: row-reverse;
 }
+
 .right-msg .msg-bubble {
   background: var(--right-msg-bg);
   color: #fff;
   border-bottom-right-radius: 0;
 }
+
 .right-msg .msg-img {
   margin: 0 0 0 10px;
 }
@@ -124,16 +134,19 @@ body {
   border-top: var(--border);
   background: #eee;
 }
+
 .msger-inputarea * {
   padding: 10px;
   border: none;
   border-radius: 3px;
   font-size: 1em;
 }
+
 .msger-input {
   flex: 1;
   background: #ddd;
 }
+
 .msger-send-btn {
   margin-left: 10px;
   background: rgb(0, 196, 65);
@@ -142,17 +155,21 @@ body {
   cursor: pointer;
   transition: background 0.23s;
 }
+
 .msger-send-btn:hover {
   background: rgb(0, 180, 50);
 }
 
 .msger-chat {
   background-color: #fcfcfe;
-  
   background-image: url("https://img.freepik.com/free-vector/hand-drawn-back-school-background_23-2149464866.jpg");
   background-size: cover;
 }
 
+/* Add this CSS to change font for "SkillSet Sherpa" */
+.msger-header-title i {
+  font-family: 'Comic Sans MS', cursive;
+}
 
 /* CSS for "Do you have a marksheet?" message and links */
 .msg.left-msg {
@@ -173,6 +190,24 @@ body {
   font-size: 16px;
   line-height: 1.4;
   margin: 0;
+}
+
+/* Add this CSS for "Yes" and "No" buttons */
+.msg.left-msg .msg-text button.msger-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #0078d4;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.msg.left-msg .msg-text button.msger-btn:hover {
+  background-color: #00569b;
 }
 
 .msg.left-msg .msg-text a.msger-link {
@@ -239,5 +274,23 @@ body {
 }
 
 #submit-aptitude-btn:hover {
+  background-color: #00569b;
+}
+.msg.left-msg .msg-text button.msger-btn,
+.msg.left-msg .msg-text a.msger-link {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #0078d4;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.msg.left-msg .msg-text button.msger-btn:hover,
+.msg.left-msg .msg-text a.msger-link:hover {
   background-color: #00569b;
 }

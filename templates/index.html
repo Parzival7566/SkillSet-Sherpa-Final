@@ -24,7 +24,8 @@
     <main class="msger-chat">
       <div class="msg left-msg">
         <div class="msg-img"
-          style="background-image: url(https://github.com/Parzival7566/SkillSet-Sherpa/blob/main/frontend/SkillSet_Sherpa_logo.png?raw=true)"></div>
+         style="background-image: url(/static/SkillSet_Sherpa_logo.png);"></div>
+
 
         <div class="msg-bubble">
           <div class="msg-info">
@@ -44,7 +45,7 @@
       <!-- Division for asking about the aptitude test (moved to the top) -->
       <div class="msg left-msg">
         <div class="msg-img"
-          style="background-image: url(https://github.com/Parzival7566/SkillSet-Sherpa/blob/main/frontend/SkillSet_Sherpa_logo.png?raw=true)"></div>
+          style="background-image: url(/static/SkillSet_Sherpa_logo.png)"></div>
         <div class="msg-bubble">
           <div class="msg-info">
             <div class="msg-info-name">SkillSet Sherpa</div>
@@ -62,7 +63,7 @@
       <!-- Division for asking about marksheet (moved below aptitude test message) -->
       <div class="msg left-msg">
         <div class="msg-img"
-          style="background-image: url(https://github.com/Parzival7566/SkillSet-Sherpa/blob/main/frontend/SkillSet_Sherpa_logo.png?raw=true)"></div>
+          style="background-image: url(/static/SkillSet_Sherpa_logo.png)"></div>
         <div class="msg-bubble">
           <div class="msg-info">
             <div class="msg-info-name">SkillSet Sherpa</div>
@@ -96,7 +97,7 @@
     let uploadedFile = null;
 
     // Icons made by Freepik from www.flaticon.com
-    const BOT_IMG = "https://github.com/Parzival7566/SkillSet-Sherpa/blob/main/frontend/SkillSet_Sherpa_logo.png";
+    const BOT_IMG = "/static/SkillSet_Sherpa_logo.png";
     const PERSON_IMG = "https://cdn3.vectorstock.com/i/1000x1000/67/57/chat-bot-profile-icon-male-avatar-man-silhouette-vector-37236757.jpg";
     const BOT_NAME = "SkillSet Sherpa";
     const PERSON_NAME = "You";
@@ -114,9 +115,10 @@
 
     function appendMessage(name, img, side, text) {
       // Simple solution for small apps
-      const msgHTML = `
+      const msgHTML = 
       <div class="msg ${side}-msg">
-        <div class="msg-img" style="background-image: url(${img})"></div>
+        <div class="msg-img"
+         style="background-image: url(/static/SkillSet_Sherpa_logo.png);"></div>
 
         <div class="msg-bubble">
           <div class="msg-info">
@@ -127,17 +129,17 @@
           <div class="msg-text">${text}</div>
         </div>
       </div>
-      `;
+      ;
 
       msgerChat.insertAdjacentHTML("beforeend", msgHTML);
       msgerChat.scrollTop += 500;
     }
 
-    function botResponse(rawText) {
+    /*//function botResponse(rawText) {
       // Use fetch to send user message to your Flask backend
-      fetch("http://localhost:5000/send-message", {
-        method: "POST",
-        headers: {
+      //fetch("http://localhost:5000/send-message", {
+      //  method: "POST",
+       // headers: {
           "Authorization": "Bearer sk-d2e2a61e82404b62955c08ca93c93c16",
           "Content-Type": "application/json"
         },
@@ -153,7 +155,7 @@
         .catch((error) => {
           console.error("Error:", error);
         });
-    }
+    }*/
 
     function askForMarksheet() {
       appendMessage(PERSON_NAME, PERSON_IMG, "right", "Yes");
