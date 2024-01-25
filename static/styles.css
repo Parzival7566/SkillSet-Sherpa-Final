@@ -1,5 +1,5 @@
 :root {
-  --body-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --body-bg: linear-gradient(135deg, #f5f7fa 0%, #ebab21 100%);
   --msger-bg: #fff;
   --border: 2px solid #ddd;
   --left-msg-bg: #ececec;
@@ -26,13 +26,21 @@ body {
   background-image: var(--body-bg);
   font-family: Helvetica, sans-serif;
 }
+.msger-header-title i {
+  font-family: 'Lato', sans-serif; /* Change the font-family to Lato */
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Add Lato font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400&display=swap');
 
 .msger {
   display: flex;
   flex-flow: column wrap;
   justify-content: space-between;
   width: 100%;
-  max-width: 867px;
+  max-width: 790px;
   margin: 25px 10px;
   height: calc(100% - 50px);
   border: var(--border);
@@ -76,6 +84,25 @@ body {
   margin-bottom: 10px;
 }
 
+.msg.left-msg .msg-bubble,
+.msg.right-msg .msg-bubble {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 15px;
+  position: relative;
+  max-width: 80%;
+}
+
+.msg.left-msg .msg-text,
+.msg.right-msg .msg-text {
+  color: #333; /* Adjust text color for better visibility */
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
+}
+
 .msg-img {
   width: 50px;
   height: 50px;
@@ -85,13 +112,6 @@ body {
   background-position: center;
   background-size: cover;
   border-radius: 50%;
-}
-
-.msg-bubble {
-  max-width: 450px;
-  padding: 15px;
-  border-radius: 15px;
-  background: var(--left-msg-bg);
 }
 
 .msg-info {
@@ -120,7 +140,7 @@ body {
 
 .right-msg .msg-bubble {
   background: var(--right-msg-bg);
-  color: #fff;
+  color: #130101;
   border-bottom-right-radius: 0;
 }
 
@@ -162,14 +182,15 @@ body {
 
 .msger-chat {
   background-color: #fcfcfe;
-  background-image: url("https://img.freepik.com/free-vector/hand-drawn-back-school-background_23-2149464866.jpg");
-  background-size: cover;
+  background-image: url("https://i.pinimg.com/originals/46/8a/bf/468abf3f392631aac269c18ee4a77dec.jpg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
 }
 
 /* Add this CSS to change font for "SkillSet Sherpa" */
-.msger-header-title i {
-  font-family: 'Comic Sans MS', cursive;
-}
+
 
 /* CSS for "Do you have a marksheet?" message and links */
 .msg.left-msg {
@@ -203,11 +224,13 @@ body {
   text-decoration: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, border 0.3s; /* Added transition for border */
+  border: 2px solid #0078d4; /* Added border styling */
 }
 
 .msg.left-msg .msg-text button.msger-btn:hover {
   background-color: #00569b;
+  border-color: #00569b; /* Change border color on hover */
 }
 
 .msg.left-msg .msg-text a.msger-link {
@@ -222,22 +245,12 @@ body {
 }
 
 /* CSS for aptitude test messages and questions */
-.msg.left-msg .msg-text {
+.msg.left-msg .msg-text,
+.msg.left-msg .msg-text a.msger-link {
   font-size: 16px;
   line-height: 1.4;
   margin: 0;
   text-align: left;
-}
-
-.msg.left-msg .msg-text a.msger-link {
-  color: #0078d4;
-  text-decoration: none;
-  margin-right: 10px;
-  cursor: pointer;
-}
-
-.msg.left-msg .msg-text a.msger-link:hover {
-  text-decoration: underline;
 }
 
 #aptitude-test-container {
@@ -266,7 +279,7 @@ body {
 #submit-aptitude-btn {
   margin-top: 20px;
   padding: 10px 20px;
-  background-color: #0078d4;
+  background-color: #d4ad00;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -274,23 +287,45 @@ body {
 }
 
 #submit-aptitude-btn:hover {
-  background-color: #00569b;
+  background-color: #c27c03;
 }
+
 .msg.left-msg .msg-text button.msger-btn,
 .msg.left-msg .msg-text a.msger-link {
   display: inline-block;
   margin-top: 10px;
   padding: 10px 20px;
-  background-color: #0078d4;
+  background-color: #eb920b;
   color: #fff;
   text-align: center;
   text-decoration: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, border 0.3s; /* Added transition for border */
+  border: 2px solid #ffc792; /* Added border styling */
 }
 
 .msg.left-msg .msg-text button.msger-btn:hover,
 .msg.left-msg .msg-text a.msger-link:hover {
   background-color: #00569b;
+  border-color: #00569b; /* Change border color on hover */
+}
+
+.msg.left-msg .msg-bubble,
+.msg.right-msg .msg-bubble {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 15px;
+  position: relative;
+  max-width: 80%;
+}
+
+.msg.left-msg .msg-text,
+.msg.right-msg .msg-text {
+  color: #333; /* Adjust text color for better visibility */
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 0;
 }
