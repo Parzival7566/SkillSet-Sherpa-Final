@@ -20,9 +20,9 @@ def bot_response():
     try:
         user_input = request.json.get('user_input', '')
         api_request_json = {
-            "model": "llama-70b-chat",
+            "model": "llama-13b-chat",
             "messages": [
-                {"role": "system", "content": "Career Counsellor and educationalist"},
+                {"role": "system", "content": "start conversation"},
                 {"role": "user", "content": user_input},
             ]
         }
