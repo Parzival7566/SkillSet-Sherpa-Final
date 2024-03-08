@@ -3,3 +3,4 @@
 flask 
 requests
 llamaapi
+img2table[easyocr]
