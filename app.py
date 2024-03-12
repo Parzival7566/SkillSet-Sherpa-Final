@@ -34,6 +34,33 @@ def upload_marksheet():
         return jsonify({'filepath': filepath, 'message': 'File processed successfully'})
     return jsonify({'error': 'No file uploaded'})
 
+
+
+@app.route('/bot_response', methods=['POST'])
+def bot_response():
+    try:
+        user_input = request.json.get('user_input', '')
+        api_request_json = {
+            "model": "llama-13b-chat",
+            "messages": [
+                {"role": "system", "content": "start conversation"},
+                {"role": "user", "content": user_input},
+            ]
+        }
+
+        # Replace this with your actual method for making the API request
+        llama_response = llama.run(api_request_json)
+
+        if llama_response:
+            # Extract assistant content from the Llama API response
+            # assistant_content = llama_response.get("choices", [])[0].get("message", {}).get("content", "")
+            return (json.dumps(llama_response.json(), indent=2))
+        else:
+            return jsonify({"error": "Failed to get API response."})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    
+
 # Function to save the table data to a CSV file
 def save_table_to_csv(filename):
     try:
@@ -66,7 +93,6 @@ def save_table_to_csv(filename):
                     column_rename_mapping[col] = f"{spec_col}"
 
         df_selected = df_selected.rename(columns=column_rename_mapping)
-        print(df)
 
         # Add the values of the column two columns left of the "GRADE" column to a new column named "TOTAL MARKS"
         grade_column_index = next((idx for idx, col_name in enumerate(df.columns) if "GRADE" in col_name), None)
@@ -79,46 +105,33 @@ def save_table_to_csv(filename):
 
         # Save DataFrame with selected and renamed columns to a new CSV file
         df_selected.to_csv('selected_columns_data.csv', index=False)
+        print(df_selected)
         print("CSV file with selected and renamed columns saved successfully.")
+        # Call the function to remove CSV files after processing the marksheet
+        remove_csv_files()
     except Exception as e:
         print(f"Error: {e}")
 
 
-@app.route('/bot_response', methods=['POST'])
-def bot_response():
+# Function to remove CSV files after processing the marksheet
+def remove_csv_files():
     try:
-        user_input = request.json.get('user_input', '')
-        api_request_json = {
-            "model": "llama-13b-chat",
-            "messages": [
-                {"role": "system", "content": "start conversation"},
-                {"role": "user", "content": user_input},
-            ]
-        }
-
-        # Replace this with your actual method for making the API request
-        llama_response = llama.run(api_request_json)
-
-        if llama_response:
-            # Extract assistant content from the Llama API response
-            # assistant_content = llama_response.get("choices", [])[0].get("message", {}).get("content", "")
-            return (json.dumps(llama_response.json(), indent=2))
-        else:
-            return jsonify({"error": "Failed to get API response."})
+        os.remove('table_data.csv')
+        os.remove('tables.xlsx')
+        print("Cleaned up successfully.")
     except Exception as e:
-        return jsonify({"error": str(e)})
+        print(f"Error: {e}")
 
-easy_ocr = EasyOCR(lang=["en"], kw={"gpu": False})
+easyocr = EasyOCR(lang=["en"], kw={"gpu": False})
 def process_marksheet(filepath):
     # Your OCR and data processing code here, adjusted to use 'filepath'
     # For example:
     pdf = PDF(src=filepath)
     pdf.to_xlsx('tables.xlsx',
-                ocr=easy_ocr,
+                ocr=easyocr,
                 implicit_rows=True,
                 borderless_tables=False,
                 min_confidence=50)
-    print("Done")
     save_table_to_csv('tables.xlsx')
 
 if __name__ == '__main__':
