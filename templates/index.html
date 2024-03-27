@@ -158,7 +158,7 @@ const parsedContent = assistantContent
     document.getElementById('user-message').value = '';
 }
 
-async function addToChatHistory(name, side, text) {
+async function addToChatHistory(name, side, text, isHTML = false) {
     let msgImageStyle = '';
     if (name === 'SkillSet Sherpa') {
         msgImageStyle = 'style="background-image: url(/static/SkillSet_Sherpa_logo.png);"';
@@ -180,11 +180,15 @@ async function addToChatHistory(name, side, text) {
     document.querySelector('.msger-chat').insertAdjacentHTML('beforeend', msgHTML);
 
     const msgTextElement = document.querySelector('.msger-chat .msg:last-child .msg-text');
-    const words = text.split(' ');
 
-    for (const word of words) {
-        msgTextElement.innerHTML += word + ' ';
-        await new Promise(resolve => setTimeout(resolve, 100));
+    if (isHTML) {
+        msgTextElement.innerHTML = text;
+    } else {
+        const words = text.split(' ');
+        for (const word of words) {
+            msgTextElement.innerHTML += word + ' ';
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
     }
 
     // Scroll to the bottom of the chat history
@@ -198,18 +202,18 @@ async function addToChatHistory(name, side, text) {
         return `${h.slice(-2)}:${m.slice(-2)}`;
     }
 
-      function askForMarksheet() {
-        addToChatHistory('You', 'right', 'Yes');
-        addToChatHistory('SkillSet Sherpa', 'left', 'Great! Please upload your mark sheet.');
+    function askForMarksheet() {
+    addToChatHistory('You', 'right', 'Yes');
+    addToChatHistory('SkillSet Sherpa', 'left', 'Great! Please upload your mark sheet.');
 
-        // Add an upload button for PDF files
-        const uploadButtonHTML = `
-          <input type="file" id="uploadMarksheet" accept=".pdf">
-          <button onclick="uploadMarksheet()">Upload</button>
-          <div id="uploadedFileContainer"></div>
-        `;
-        addToChatHistory('SkillSet Sherpa', 'left', uploadButtonHTML);
-      }
+    // Add an upload button for PDF files
+    const uploadButtonHTML = `
+        <input type="file" id="uploadMarksheet" accept=".pdf">
+        <button onclick="uploadMarksheet()">Upload</button>
+        <div id="uploadedFileContainer"></div>
+    `;
+    addToChatHistory('SkillSet Sherpa', 'left', uploadButtonHTML, true);
+}
 
       function askForImage() {
         addToChatHistory('You', 'right', 'No');
