@@ -54,8 +54,7 @@
 <body>
     <div class="container">
         <h1>Aptitude Test</h1>
-        <form id="aptitude-form" method="POST">
-
+        <form id="aptitude-form" method="POST" action="/submit_responses">
 
            
             <div class="question">
@@ -227,50 +226,46 @@
             <button type="submit">Submit</button>
         </form>
     </div>
-    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-          const aptitudeForm = document.getElementById("aptitude-form");
+        $(document).ready(function() {
+          $("#aptitude-form").submit(function(event) {
+            // Prevent duplicate submissions
+            event.preventDefault();
+            $(this).prop("disabled", true); // Disable the submit button
     
-          aptitudeForm.addEventListener("submit", function (event) {
-            event.preventDefault(); // Prevent the form from submitting via HTTP request
-    
-            const formData = new FormData(aptitudeForm);
-    
-            // Convert form data to an object
-            const answers = {};
-            formData.forEach((value, key) => {
-              answers[key] = value;
+            // Collect form data into a dictionary
+            var formData = {};
+            $("#aptitude-form input[type='radio']:checked").each(function() {
+              formData[$(this).attr("name")] = $(this).val();
             });
     
-            // Send the answers to the Flask server
-            fetch("http://127.0.0.1:5000/aptitude-test", {
-              method: "POST",
-              headers: {
-                "Authorization": "Bearer sk-d2e2a61e82404b62955c08ca93c93c16",
-                "Content-Type": "application/json",
+            // Send form data to Flask route
+            $.ajax({
+              type: "POST",
+              url: "/submit_responses",
+              contentType: "application/json",
+              data: JSON.stringify(formData),
+              success: function(response) {
+                console.log("Form submitted successfully!");
+                console.log("Form Data:", formData);
+                console.log("Server Response:", response);
+                // Handle success response if needed (e.g., display results)
+                alert('Your responses have been submitted successfully!');
+                window.close(); // This will close the current tab
+                $("#aptitude-form").prop("disabled", false); // Enable the submit button again
               },
-              body: JSON.stringify({ answers }),
-            })
-              .then((response) => response.json())
-              .then((data) => {
-  if (data.success) {
-    alert("Aptitude test submitted successfully!");
-    // Close the current tab
-    window.close();
-  } else {
-    alert("Error submitting aptitude test.");
-    // Handle the error case
-  }
-})
-   
-              .catch((error) => {
-                console.error("Error:", error);
-                alert("An error occurred while submitting the aptitude test.");
-              });
+              error: function(xhr, status, error) {
+                console.error("Error submitting form:", xhr.responseText);
+                // Handle error response if needed (e.g., display an error message)
+                alert('There was an issue submitting your responses. Please try again.');
+                $("#aptitude-form").prop("disabled", false); // Enable the submit button again
+              }
+            });
           });
         });
-    </script>
+      </script>
       
 </body>
 </html>

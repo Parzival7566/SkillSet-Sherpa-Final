@@ -48,7 +48,9 @@
           <div class="msg-text">
             Ready for a quick aptitude test?
             <br>
+            <a href="/aptitude" class="btn btn-primary">
             <button onclick="openAptitudeTest()" class="msger-btn">Take Aptitude Test</button>
+          </a>
           </div>
         </div>
       </div>
@@ -77,16 +79,16 @@
     </form>
 
     <script>
-        async function sendMessage(event) {
-        event.preventDefault();
-        const userMessage = document.getElementById('user-message').value;
+       async function sendMessage(event) {
+    event.preventDefault();
+    const userMessage = document.getElementById('user-message').value;
 
-        // Append user message to the chat
-        addToChatHistory('You', 'right', userMessage);
+    // Append user message to the chat
+    addToChatHistory('You', 'right', userMessage);
 
-        // Make a request to Llama API
-        try {
-            const response = await fetch('/bot_response', {
+    // Make a request to Llama API
+    try {
+        const response = await fetch('/bot_response', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -94,48 +96,97 @@
             body: JSON.stringify({
                 user_input: userMessage,
             }),
-            });
+        });
 
-            if (!response.ok) {
+        if (!response.ok) {
             throw new Error('Failed to fetch Llama API');
-            }
-
-            // Parse the JSON response
-            const data = await response.json();
-
-            // Extract assistant content from the Llama API response
-            const assistantContent = data.choices[0].message.content;
-
-            // Add assistant message to the chat
-            addToChatHistory('SkillSet Sherpa', 'left', assistantContent);
-        } catch (error) {
-            console.error('Error fetching Llama API:', error);
         }
 
-        // Clear the input field
-        document.getElementById('user-message').value = '';
-        }
+        // Parse the JSON response
+        const data = await response.json();
 
-    function addToChatHistory(name, side, text) {
-        const msgHTML = `
-            <div class="msg ${side}-msg">
-                <div class="msg-img"></div>
-                <div class="msg-bubble">
-                    <div class="msg-info">
-                        <div class="msg-info-name">${name}</div>
-                        <div class="msg-info-time">${formatDate(new Date())}</div>
-                    </div>
-                    <div class="msg-text">${text}</div>
-                </div>
-            </div>
-        `;
+        // Extract assistant content from the Llama API response
+        const assistantContent = data.choices[0].message.content;
+        //console.log(assistantContent);
 
-        document.querySelector('.msger-chat').insertAdjacentHTML('beforeend', msgHTML);
+        function formatAssistantContent(content) {
+  const lines = content.split('\n');
+  let formattedContent = '';
 
-        // Scroll to the bottom of the chat history
-        const msgerChat = document.querySelector('.msger-chat');
-        msgerChat.scrollTop = msgerChat.scrollHeight;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+
+    if (line === '') {
+      formattedContent += '\n';
+    } else if (/^\d+\./.test(line)) {
+      formattedContent += '\n' + line + '\n';
+    } else {
+      formattedContent += line + ' ';
     }
+  }
+
+  return formattedContent.trim();
+}
+
+const parsedContent = assistantContent
+.replace(/^\*\*([^\*]+)\*\*/gm, '*$1*') // Make bold text italic instead
+    .replace(/^\*([^\*]+)\*/gm, (match, p1) => `  *${p1}*`) // Add indentation before italic text
+    .replace(/\n/g, '\n  ') // Indent lines
+    .replace(/\\n/g, '\n') // Handle newline escapes
+    .replace(/\n/g, '<br>'); // Replace newline characters with HTML line breaks
+    
+    // Print parsed response
+    console.log(
+  parsedContent
+);
+
+
+        addToChatHistory('SkillSet Sherpa', 'left',parsedContent ) ;
+    } catch (error) {
+        console.error('Error fetching Llama API:', error);
+    }
+
+    // Clear the input field
+    document.getElementById('user-message').value = '';
+}
+
+async function addToChatHistory(name, side, text, isHTML = false) {
+    let msgImageStyle = '';
+    if (name === 'SkillSet Sherpa') {
+        msgImageStyle = 'style="background-image: url(/static/SkillSet_Sherpa_logo.png);"';
+    }
+
+    const msgHTML = `
+        <div class="msg ${side}-msg">
+            <div class="msg-img" ${msgImageStyle}></div>
+            <div class="msg-bubble">
+                <div class="msg-info">
+                    <div class="msg-info-name">${name}</div>
+                    <div class="msg-info-time">${formatDate(new Date())}</div>
+                </div>
+                <div class="msg-text"></div>
+            </div>
+        </div>
+    `;
+
+    document.querySelector('.msger-chat').insertAdjacentHTML('beforeend', msgHTML);
+
+    const msgTextElement = document.querySelector('.msger-chat .msg:last-child .msg-text');
+
+    if (isHTML) {
+        msgTextElement.innerHTML = text;
+    } else {
+        const words = text.split(' ');
+        for (const word of words) {
+            msgTextElement.innerHTML += word + ' ';
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+    }
+
+    // Scroll to the bottom of the chat history
+    const msgerChat = document.querySelector('.msger-chat');
+    msgerChat.scrollTop = msgerChat.scrollHeight;
+}
 
     function formatDate(date) {
         const h = '0' + date.getHours();
@@ -197,14 +248,11 @@
           });
       }
 
-      // Function to open the aptitude test in a new tab
+      // Modify this function to open the aptitude test in a new tab
       function openAptitudeTest() {
-        // Specify the URL of the aptitude.html page
-        const aptitudeTestURL = 'templates/aptitude.html';
-
-        // Open the URL in a new tab
-        window.open(aptitudeTestURL, '_blank');
+        window.open('/aptitude', '_blank');
       }
+      
     </script>
   </section>
 </body>
