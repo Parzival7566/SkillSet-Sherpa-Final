@@ -194,18 +194,18 @@ async function addToChatHistory(name, side, text, isHTML = false) {
         return `${h.slice(-2)}:${m.slice(-2)}`;
     }
 
-      function askForMarksheet() {
-        addToChatHistory('You', 'right', 'Yes');
-        addToChatHistory('SkillSet Sherpa', 'left', 'Great! Please upload your mark sheet.');
+    function askForMarksheet() {
+    addToChatHistory('You', 'right', 'Yes');
+    addToChatHistory('SkillSet Sherpa', 'left', 'Great! Please upload your mark sheet.');
 
-        // Add an upload button for PDF files
-        const uploadButtonHTML = `
-          <input type="file" id="uploadMarksheet" accept=".pdf">
-          <button onclick="uploadMarksheet()">Upload</button>
-          <div id="uploadedFileContainer"></div>
-        `;
-        addToChatHistory('SkillSet Sherpa', 'left', uploadButtonHTML);
-      }
+    // Add an upload button for PDF files
+    const uploadButtonHTML = `
+        <input type="file" id="uploadMarksheet" accept=".pdf">
+        <button onclick="uploadMarksheet()">Upload</button>
+        <div id="uploadedFileContainer"></div>
+    `;
+    addToChatHistory('SkillSet Sherpa', 'left', uploadButtonHTML, true);
+}
 
       function askForImage() {
         addToChatHistory('You', 'right', 'No');
