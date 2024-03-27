@@ -252,11 +252,14 @@
                 console.log("Form Data:", formData);
                 console.log("Server Response:", response);
                 // Handle success response if needed (e.g., display results)
+                alert('Your responses have been submitted successfully!');
+                window.close(); // This will close the current tab
                 $("#aptitude-form").prop("disabled", false); // Enable the submit button again
               },
               error: function(xhr, status, error) {
                 console.error("Error submitting form:", xhr.responseText);
                 // Handle error response if needed (e.g., display an error message)
+                alert('There was an issue submitting your responses. Please try again.');
                 $("#aptitude-form").prop("disabled", false); // Enable the submit button again
               }
             });

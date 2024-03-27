@@ -106,53 +106,44 @@ user_responses = {}
 def aptitude():
     return render_template('aptitude.html')
 
-
 @app.route('/submit_responses', methods=['POST'])
 def submit_responses():
     try:
-        # Get user responses from the form
-        responses = request.json
-        user_responses = {int(key): int(value) for key, value in request.form.items()}
+        responses = request.json  # This is already a dictionary
         num_questions = 20  # Update this number if needed
-        print(len(responses))
-        print(responses)
         
-        print(user_responses)
-        if len(responses) != num_questions:
-            return jsonify({"error": "Number of responses does not match the number of questions."}), 400
+        # Instead of requiring all questions to be answered, handle cases where some might be missing
+        if len(responses) > num_questions:
+            return jsonify({"error": "Received more responses than expected."}), 400
+        
         # Calculate RIASEC scores
-        riasec_scores = calculate_riasec_scores(user_responses.values())
-        print(riasec_scores)
+        riasec_scores = calculate_riasec_scores(responses)
+        
         # Return the calculated scores
         return jsonify(riasec_scores)
     except Exception as e:
         return jsonify({"error": str(e)})
-# @app.route('/submit_responses', methods=['POST'])
-# def submit_responses():
-#     try:
-#         # Get user responses from the form
-#         responses = request.form
-#         user_responses = {int(key): int(value) for key, value in responses.items()}
-#         num_questions = 20  # Update this number if needed
-#         print(responses)
-#         if len(responses) != num_questions:
-#             return jsonify({"error": "Number of responses does not match the number of questions."}), 400
-        
-#         # Calculate RIASEC scores
-#         riasec_scores = calculate_riasec_scores(user_responses.values())
 
-#         # Return the calculated scores
-#         return jsonify(riasec_scores)
-#     except Exception as e:
-#         return jsonify({"error": str(e)})
-# Function to calculate and return RIASEC scores
 def calculate_riasec_scores(responses):
-    if len(responses.items) != len(questions):
-        print("Number of responses does not match the number of questions.")
-        return
+    if len(responses) != len(questions):
+        return {"error": "Number of responses does not match the number of questions."}
 
-    total_score = sum(responses)
-    normalized_scores = {category.split()[0]: (score / total_score) * 100 for (_, category), score in zip(questions, responses)}
+    # Convert responses to scores
+    scores = [int(score) for score in responses.values()]
+    total_score = sum(scores)
+    if total_score == 0:  # Prevent division by zero
+        return {"error": "Total score cannot be zero."}
+
+    normalized_scores = {}
+    for (_, category), score in zip(questions, scores):
+        category_key = category.split()[0]
+        normalized_scores[category_key] = normalized_scores.get(category_key, 0) + score
+
+    # Normalize scores
+    for key in normalized_scores:
+        normalized_scores[key] = (normalized_scores[key] / total_score) * 100
+    
+    print(normalized_scores)
 
     return normalized_scores
     

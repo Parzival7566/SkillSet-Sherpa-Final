@@ -256,22 +256,11 @@ async function addToChatHistory(name, side, text, isHTML = false) {
           });
       }
 
-      // Function to open the aptitude test in a new tab
+      // Modify this function to open the aptitude test in a new tab
       function openAptitudeTest() {
-    // Make a request to the server endpoint for aptitude test
-    fetch('/aptitude.html')
-        .then(response => {
-            if (response.ok) {
-                // Redirect to aptitude.html
-                window.location.href = response.url;
-            } else {
-                console.error('Failed to redirect to aptitude test page.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-}
+        window.open('/aptitude', '_blank');
+      }
+      
     </script>
   </section>
 </body>
