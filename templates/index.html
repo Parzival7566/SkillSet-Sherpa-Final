@@ -82,9 +82,13 @@
        async function sendMessage(event) {
     event.preventDefault();
     const userMessage = document.getElementById('user-message').value;
+    document.getElementById('user-message').value = ''; // Move this line here to clear the input immediately
 
     // Append user message to the chat
     addToChatHistory('You', 'right', userMessage);
+
+    // Show typing indicator
+    addToChatHistory('SkillSet Sherpa', 'left', '...', true);
 
     // Make a request to Llama API
     try {
@@ -140,10 +144,14 @@ const parsedContent = assistantContent
   parsedContent
 );
 
+        // Remove typing indicator
+        document.querySelector('.msger-chat .msg:last-child').remove();
 
         addToChatHistory('SkillSet Sherpa', 'left',parsedContent ) ;
     } catch (error) {
         console.error('Error fetching Llama API:', error);
+        // Remove typing indicator if error occurs
+        document.querySelector('.msger-chat .msg:last-child').remove();
     }
 
     // Clear the input field

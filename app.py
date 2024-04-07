@@ -7,6 +7,7 @@ from img2table.document import PDF
 import pandas as pd
 import openpyxl
 import os
+import tempfile
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "SECRET_KEY"
@@ -38,22 +39,26 @@ def upload_marksheet():
 
 @app.route('/bot_response', methods=['POST'])
 def bot_response():
+    global conversation_history
     try:
-        user_input = request.json.get('user_input', '')
+        # Check if there's a direct prompt in the request, if not, use user input
+        prompt = request.json.get('prompt')
+        if prompt:
+            user_input = prompt
+        else:
+            user_input = request.json.get('user_input', '')
+            conversation_history.append({"role": "user", "content": user_input})
+        
         api_request_json = {
             "model": "llama-13b-chat",
-            "messages": [
-                {"role": "system", "content": "start conversation"},
-                {"role": "user", "content": user_input},
-            ]
+            "messages": conversation_history if not prompt else [{"role": "system", "content": "start conversation"}, {"role": "user", "content": user_input}]
         }
 
-        # Replace this with your actual method for making the API request
         llama_response = llama.run(api_request_json)
 
         if llama_response:
-            # Extract assistant content from the Llama API response
-            # assistant_content = llama_response.get("choices", [])[0].get("message", {}).get("content", "")
+            if not prompt:
+                conversation_history.append({"role": "assistant", "content": json.dumps(llama_response.json(), indent=2)})
             return (json.dumps(llama_response.json(), indent=2))
         else:
             return jsonify({"error": "Failed to get API response."})
@@ -203,6 +208,18 @@ def calculate_riasec_scores(responses):
     print(normalized_scores)
 
     return normalized_scores
+
+def create_temp_prompt(marks_data, aptitude_data):
+    with tempfile.NamedTemporaryFile(mode='w+', delete=False) as tmp:
+        prompt = "Hi, I am a student of 10th class and I want to know my future career options. Please answer the following questions based on my marks and aptitude test.\n"
+        prompt += f"Marks Data: {marks_data}\n"
+        prompt += f"Aptitude Data: {aptitude_data}\n"
+        prompt += "Based on my marks and aptitude test, what are the best career options for me?\n For achieveing those career options, what are the streams that I should take in the coming 2 years?\n Justify your answer.\n"
+        tmp.write(prompt)
+        print(prompt)
+        return tmp.name  # Returns the path to the temporary file
+
+conversation_history = []
 
 if __name__ == '__main__':
     webbrowser.open('http://127.0.0.1:5000')
