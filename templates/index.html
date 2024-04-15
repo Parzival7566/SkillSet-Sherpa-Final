@@ -238,29 +238,35 @@ async function addToChatHistory(name, side, text, isHTML = false) {
         }
       }
 
-      // Function to send the uploaded mark sheet to the server
-      function sendMarksheetToServer(file) {
-        const formData = new FormData();
-        formData.append('marksheet', file);
-
-        fetch('/upload-marksheet', {
-          method: 'POST',
-          body: formData,
-        })
-          .then(response => response.json())
-          .then(data => {
-            console.log('Server response:', data);
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
-      }
-
       // Modify this function to open the aptitude test in a new tab
       function openAptitudeTest() {
         window.open('/aptitude', '_blank');
       }
-      
+      // Add this inside the <script> tag
+      function displayLLMResponse(data) {
+          if (data.llm_response) {
+              addToChatHistory('SkillSet Sherpa', 'left', data.llm_response);
+          }
+      }
+
+      // Modify the sendMarksheetToServer function to include the displayLLMResponse call
+      function sendMarksheetToServer(file) {
+          const formData = new FormData();
+          formData.append('marksheet', file);
+
+          fetch('/upload-marksheet', {
+            method: 'POST',
+            body: formData,
+          })
+            .then(response => response.json())
+            .then(data => {
+              console.log('Server response:', data);
+              displayLLMResponse(data); // Display LLM response if available
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
+        }
     </script>
   </section>
 </body>
