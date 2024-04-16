@@ -109,53 +109,21 @@
         // Parse the JSON response
         const data = await response.json();
 
-        // Extract assistant content from the Llama API response
-        const assistantContent = data.choices[0].message.content;
-        //console.log(assistantContent);
-
-        function formatAssistantContent(content) {
-  const lines = content.split('\n');
-  let formattedContent = '';
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-
-    if (line === '') {
-      formattedContent += '\n';
-    } else if (/^\d+\./.test(line)) {
-      formattedContent += '\n' + line + '\n';
-    } else {
-      formattedContent += line + ' ';
-    }
-  }
-
-  return formattedContent.trim();
-}
-
-const parsedContent = assistantContent
-.replace(/^\*\*([^\*]+)\*\*/gm, '*$1*') // Make bold text italic instead
-    .replace(/^\*([^\*]+)\*/gm, (match, p1) => `  *${p1}*`) // Add indentation before italic text
-    .replace(/\n/g, '\n  ') // Indent lines
-    .replace(/\\n/g, '\n') // Handle newline escapes
-    .replace(/\n/g, '<br>'); // Replace newline characters with HTML line breaks
-    
-    // Print parsed response
-    console.log(
-  parsedContent
-);
-
-        // Remove typing indicator
-        document.querySelector('.msger-chat .msg:last-child').remove();
-
-        addToChatHistory('SkillSet Sherpa', 'left',parsedContent ) ;
+        // Check if there's an error in the response
+        if (data.error) {
+            console.error('Error from Llama API:', data.error);
+            // Handle error appropriately
+        } else {
+            // Assuming llm_response contains the text to be displayed
+            const assistantResponse = data.llm_response;
+            // Remove typing indicator and display the response
+            document.querySelector('.msger-chat .msg:last-child').remove();
+            addToChatHistory('SkillSet Sherpa', 'left', assistantResponse, true); // Set isHTML to true if response contains HTML
+        }
     } catch (error) {
         console.error('Error fetching Llama API:', error);
-        // Remove typing indicator if error occurs
-        document.querySelector('.msger-chat .msg:last-child').remove();
+        document.querySelector('.msger-chat .msg:last-child').remove(); // Remove typing indicator if error occurs
     }
-
-    // Clear the input field
-    document.getElementById('user-message').value = '';
 }
 
 async function addToChatHistory(name, side, text, isHTML = false) {
