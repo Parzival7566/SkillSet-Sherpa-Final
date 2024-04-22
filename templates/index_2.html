@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <title>SkillSet Sherpa</title>
@@ -10,48 +9,54 @@
   <link rel="stylesheet" href="static/styles.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
-
 <body>
-  <section class="msger">
-    <header class="msger-header">
-      <div class="msger-header-title">
-        <i>SkillSet Sherpa</i>
-      </div>
-    </header>
-
+  <section class="msger"> 
     <main class="msger-chat" id="chat-history">
-      <div class="msg left-msg">
-        <div class="msg-img" style="background-image: url(/static/SkillSet_Sherpa_logo.png);"></div>
-        <div class="msg-bubble">
-          <div class="msg-info">
-            <div class="msg-info-name">SkillSet Sherpa</div>
-            <div class="msg-info-time"></div>
-          </div>
-        </div>
-      </div>
-
-
-    <form class="msger-inputarea" onsubmit="sendMessage(event)">
-      <input type="text" class="msger-input" id="user-message" placeholder="Enter your message...">
-      <button type="submit" class="msger-send-btn">Send</button>
-    </form>
+    </main>
+  </section>
 
   <script>
-    fetch('/response') // Fetch the response text file
+    fetch('/response') 
       .then(response => response.json())
       .then(data => {
         const chatbotResponse = data.choices[0].message.content;
 
+        function formatAssistantContent(content) {
+          const lines = content.split('\n');
+          let formattedContent = '';
+
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+
+            if (line === '') {
+              formattedContent += '\n';
+            } else if (/^\d+\./.test(line)) {
+              formattedContent += '\n' + line + '\n';
+            } else {
+              formattedContent += line + ' ';
+            }
+          }
+
+          return formattedContent.trim();
+        }
+
+        const parsedContent = formatAssistantContent(chatbotResponse)
+          .replace(/^\*\*([^\*]+)\*\*/gm, '*$1*') // Make bold text italic
+          .replace(/^\*([^\*]+)\*/gm, (match, p1) => `  *${p1}*`) // Indent italic text         
+          .replace(/\n/g, '\n  ') // Indent lines
+          .replace(/\\n/g, '\n')  // Handle newline escapes
+          .replace(/\n/g, '<br>');  // Insert HTML line breaks
+
         // Create the chatbot message element
         const msgHTML = `
           <div class="msg left-msg"> 
-            <div class="msg-img"></div> 
+            <div class="msg-img" style="background-image: url(/static/SkillSet_Sherpa_logo.png);"></div> 
             <div class="msg-bubble">
               <div class="msg-info">
                 <div class="msg-info-name">SkillSet Sherpa</div> 
               </div> 
               <div class="msg-text">
-                ${chatbotResponse} 
+                ${parsedContent} 
               </div> 
             </div> 
           </div>
