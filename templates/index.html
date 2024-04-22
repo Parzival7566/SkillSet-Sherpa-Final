@@ -109,21 +109,53 @@
         // Parse the JSON response
         const data = await response.json();
 
-        // Check if there's an error in the response
-        if (data.error) {
-            console.error('Error from Llama API:', data.error);
-            // Handle error appropriately
-        } else {
-            // Assuming llm_response contains the text to be displayed
-            const assistantResponse = data.llm_response;
-            // Remove typing indicator and display the response
-            document.querySelector('.msger-chat .msg:last-child').remove();
-            addToChatHistory('SkillSet Sherpa', 'left', assistantResponse, true); // Set isHTML to true if response contains HTML
-        }
+        // Extract assistant content from the Llama API response
+        const assistantContent = data.choices[0].message.content;
+        //console.log(assistantContent);
+
+        function formatAssistantContent(content) {
+  const lines = content.split('\n');
+  let formattedContent = '';
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+
+    if (line === '') {
+      formattedContent += '\n';
+    } else if (/^\d+\./.test(line)) {
+      formattedContent += '\n' + line + '\n';
+    } else {
+      formattedContent += line + ' ';
+    }
+  }
+
+  return formattedContent.trim();
+}
+
+const parsedContent = assistantContent
+.replace(/^\*\*([^\*]+)\*\*/gm, '*$1*') // Make bold text italic instead
+    .replace(/^\*([^\*]+)\*/gm, (match, p1) => `  *${p1}*`) // Add indentation before italic text
+    .replace(/\n/g, '\n  ') // Indent lines
+    .replace(/\\n/g, '\n') // Handle newline escapes
+    .replace(/\n/g, '<br>'); // Replace newline characters with HTML line breaks
+    
+    // Print parsed response
+    console.log(
+  parsedContent
+);
+
+        // Remove typing indicator
+        document.querySelector('.msger-chat .msg:last-child').remove();
+
+        addToChatHistory('SkillSet Sherpa', 'left',parsedContent ) ;
     } catch (error) {
         console.error('Error fetching Llama API:', error);
-        document.querySelector('.msger-chat .msg:last-child').remove(); // Remove typing indicator if error occurs
+        // Remove typing indicator if error occurs
+        document.querySelector('.msger-chat .msg:last-child').remove();
     }
+
+    // Clear the input field
+    document.getElementById('user-message').value = '';
 }
 
 async function addToChatHistory(name, side, text, isHTML = false) {
@@ -206,35 +238,64 @@ async function addToChatHistory(name, side, text, isHTML = false) {
         }
       }
 
+      // Function to send the uploaded mark sheet to the server
+      function sendMarksheetToServer(file) {
+        const formData = new FormData();
+        formData.append('marksheet', file);
+
+        fetch('/upload-marksheet', {
+          method: 'POST',
+          body: formData,
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Server response:', data);
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
+
       // Modify this function to open the aptitude test in a new tab
       function openAptitudeTest() {
         window.open('/aptitude', '_blank');
       }
-      // Add this inside the <script> tag
-      function displayLLMResponse(data) {
-          if (data.llm_response) {
-              addToChatHistory('SkillSet Sherpa', 'left', data.llm_response);
-          }
-      }
 
-      // Modify the sendMarksheetToServer function to include the displayLLMResponse call
-      function sendMarksheetToServer(file) {
-          const formData = new FormData();
-          formData.append('marksheet', file);
-
-          fetch('/upload-marksheet', {
+      function processFinalData(marksData, aptitudeData) {
+        fetch('/process_final_data', {
             method: 'POST',
-            body: formData,
-          })
-            .then(response => response.json())
-            .then(data => {
-              console.log('Server response:', data);
-              displayLLMResponse(data); // Display LLM response if available
-            })
-            .catch(error => {
-              console.error('Error:', error);
-            });
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                marks_data: marksData,
+                aptitude_data: aptitudeData,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('LLM Response:', data.llm_response);
+            // Display this response in the chat history or another appropriate place in your UI
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+    async function fetchLastLLMResponse() {
+    try {
+        const response = await fetch('/get_last_llm_response'); // Assuming this endpoint is implemented
+        if (!response.ok) {
+            throw new Error('Failed to fetch the last LLM response');
         }
+        const data = await response.json();
+        const lastResponse = data.response; // Assuming the response structure has a 'response' field
+        // Now, use lastResponse to update the UI
+        addToChatHistory('SkillSet Sherpa', 'left', lastResponse);
+    } catch (error) {
+        console.error('Error fetching the last LLM response:', error);
+    }
+}
+      
     </script>
   </section>
 </body>
