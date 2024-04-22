@@ -32,38 +32,50 @@ def upload_marksheet():
         # Call the process_marksheet function with the filepath
         process_marksheet(filepath)
         
-        return jsonify({'filepath': filepath, 'message': 'File processed successfully'})
     return jsonify({'error': 'No file uploaded'})
-
-
 
 @app.route('/bot_response', methods=['POST'])
 def bot_response():
     global conversation_history
     try:
-        # Check if there's a direct prompt in the request, if not, use user input
         prompt = request.json.get('prompt')
         if prompt:
-            user_input = prompt
+            print("This is the prompt : ##########################",prompt)
+            response = send_to_llama_api(prompt)
+            print("LlamaAPI response prompt :", response)
+            return jsonify({"llm_response": response})
         else:
             user_input = request.json.get('user_input', '')
             conversation_history.append({"role": "user", "content": user_input})
-        
-        api_request_json = {
-            "model": "llama-13b-chat",
-            "messages": conversation_history if not prompt else [{"role": "system", "content": "start conversation"}, {"role": "user", "content": user_input}]
-        }
-
-        llama_response = llama.run(api_request_json)
-
-        if llama_response:
-            if not prompt:
-                conversation_history.append({"role": "assistant", "content": json.dumps(llama_response.json(), indent=2)})
-            return (json.dumps(llama_response.json(), indent=2))
-        else:
-            return jsonify({"error": "Failed to get API response."})
+            
+            # Check if the request is coming from process_final_data
+            if request.json.get('from_process_final_data'):
+                response = user_input
+            else:
+                response = send_to_llama_api(user_input)
+            
+            print("LlamaAPI response no prompt:", response)
+            if not isinstance(response, dict) or "error" not in response:
+                conversation_history.append({"role": "assistant", "content": response})
+            return jsonify({"llm_response": response})
     except Exception as e:
         return jsonify({"error": str(e)})
+
+def process_final_data():
+    marks_data = request.json.get('marks_data')
+    aptitude_data = request.json.get('aptitude_data')
+
+    temp_file_path = create_temp_prompt(marks_data, aptitude_data)
+
+    with open(temp_file_path, 'r') as file:
+        prompt = file.read()
+
+    response = send_prompt_to_llm(prompt)
+
+    os.remove(temp_file_path)
+
+    # Send the response to the bot_response function
+    return jsonify({"user_input": response, "from_process_final_data": True})
     
 
 # Function to save the table data to a CSV file
@@ -174,15 +186,22 @@ def submit_responses():
         responses = request.json  # This is already a dictionary
         num_questions = 20  # Update this number if needed
         
-        # Instead of requiring all questions to be answered, handle cases where some might be missing
         if len(responses) > num_questions:
             return jsonify({"error": "Received more responses than expected."}), 400
         
-        # Calculate RIASEC scores
         riasec_scores = calculate_riasec_scores(responses)
         
-        # Return the calculated scores
-        return jsonify(riasec_scores)
+        marks_data = pd.read_csv('selected_columns_data.csv').to_dict(orient='records') 
+        
+        # Create and send the prompt to the LLM
+        temp_file_path = create_temp_prompt(marks_data, json.dumps(riasec_scores))
+        with open(temp_file_path, 'r') as file:
+            prompt = file.read()
+        os.remove(temp_file_path)  # Clean up the temporary file
+        
+        llm_response = send_prompt_to_llm(prompt)
+        
+        return jsonify({"llm_response": llm_response})
     except Exception as e:
         return jsonify({"error": str(e)})
 
@@ -213,14 +232,54 @@ def create_temp_prompt(marks_data, aptitude_data):
     with tempfile.NamedTemporaryFile(mode='w+', delete=False) as tmp:
         prompt = "Hi, I am a student of 10th class and I want to know my future career options. Please answer the following questions based on my marks and aptitude test.\n"
         prompt += f"Marks Data: {marks_data}\n"
-        prompt += f"Aptitude Data: {aptitude_data}\n"
+        prompt += f"Holland Codes (RIASEC) Aptitude Data: {aptitude_data}\n"
         prompt += "Based on my marks and aptitude test, what are the best career options for me?\n For achieveing those career options, what are the streams that I should take in the coming 2 years?\n Justify your answer.\n"
         tmp.write(prompt)
         print(prompt)
         return tmp.name  # Returns the path to the temporary file
 
+def send_prompt_to_llm(prompt):
+    response = send_to_llama_api(prompt)
+    if isinstance(response, dict) and "error" in response:
+        print(response["error"])
+    else:
+        print(response)
+    return response
+
+def send_to_llama_api(prompt):
+    api_request_json = {
+        "model": "llama-13b-chat",
+        "messages": [{"role": "system", "content": "start conversation"}, {"role": "user", "content": prompt}]
+    }
+    llama_response = llama.run(api_request_json)
+    if llama_response:
+        #print(llama_response)
+        response_json = llama_response.json()
+        content = response_json["choices"][0]["message"]["content"]
+        print(content)
+        # Save the content to a text file as a report
+       
+        
+        report_filename = "templates/llama_response_report.txt"
+        if not os.path.exists(report_filename):
+            with open(report_filename, "w") as file:
+               file.write(content) 
+        else:
+            with open(report_filename, "a", encoding="utf-8") as file:
+                file.write(content)
+
+        print(f"Report saved as: {report_filename}")
+
+        return content
+    else:
+        return {"error": "Failed to get API response."}
+    #     return json.dumps(content.json(), indent=2)
+    # else:
+    #     return {"error": "Failed to get API response."}
+    
+
 conversation_history = []
 
 if __name__ == '__main__':
     webbrowser.open('http://127.0.0.1:5000')
-    app.run(debug = True)
+    app.run()
