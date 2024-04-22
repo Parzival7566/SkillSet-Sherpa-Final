@@ -168,6 +168,15 @@ user_responses = {}
 def aptitude():
     return render_template('aptitude.html')
 
+@app.route('/index2')
+def index2():
+    return render_template('index_2.html')
+
+# add a new route to return the response.txt filw to the server
+@app.route('/response')
+def response():
+    return render_template('response.txt')
+
 @app.route('/submit_responses', methods=['POST'])
 def submit_responses():
     try:
@@ -181,10 +190,17 @@ def submit_responses():
         # Calculate RIASEC scores
         riasec_scores = calculate_riasec_scores(responses)
         
-        # Return the calculated scores
-        return jsonify(riasec_scores)
+        # Prepare the response with a success message and redirection link
+        response = {
+            "message": "Your responses have been submitted successfully!",
+            "redirect_url": "/index2"  # Replace with your desired redirection path
+        }
+        
+        # Return the JSON response
+        return jsonify(response)
     except Exception as e:
         return jsonify({"error": str(e)})
+
 
 def calculate_riasec_scores(responses):
     if len(responses) != len(questions):
@@ -207,7 +223,39 @@ def calculate_riasec_scores(responses):
     
     print(normalized_scores)
 
+    # Check if marksheet data is available
+    if os.path.exists('selected_columns_data.csv'):
+        # Read the marksheet data from the CSV file
+        marksheet_data = pd.read_csv('selected_columns_data.csv')
+        
+        # Create the temporary prompt file
+        temp_prompt_file = create_temp_prompt(marksheet_data.to_dict(), normalized_scores)
+        
+        # Send the prompt to the llama API
+        with open(temp_prompt_file, 'r') as file:
+            prompt = file.read()
+        
+        api_request_json = {
+            "model": "llama-13b-chat",
+            "messages": [{"role": "system", "content": "start conversation"}, {"role": "user", "content": prompt}]
+        }
+
+        llama_response = llama.run(api_request_json)
+
+        if llama_response:
+            # Save the API response to a text file in the templates directory
+            response_text = json.dumps(llama_response.json(), indent=2)
+            with open('templates/response.txt', 'w') as file:
+                file.write(response_text)
+            
+            # Remove the temporary prompt file
+            os.remove(temp_prompt_file)
+        else:
+            print("Failed to get API response.")
+    
     return normalized_scores
+
+# ... (remaining code remains the same)
 
 def create_temp_prompt(marks_data, aptitude_data):
     with tempfile.NamedTemporaryFile(mode='w+', delete=False) as tmp:

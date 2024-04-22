@@ -1,0 +1,20 @@
+{
+  "created": 1713806652,
+  "model": "llama-13b-chat",
+  "usage": {
+    "prompt_tokens": 263,
+    "completion_tokens": 665,
+    "total_tokens": 928
+  },
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Hi there! I'd be happy to help you explore your future career options based on your marks and aptitude test.\n\nBased on your marks, it seems that you have performed well in all subjects, with English, Hindi, and Science being your strongest subjects. Your marks in these subjects suggest that you have a good foundation in language, literature, and scientific concepts. Your marks in Social Science and Mathematics are also commendable, indicating your ability to understand and apply theoretical concepts.\n\nMoving on to your aptitude test, it appears that you have a well-rounded profile with strengths in multiple areas. Your high score in Realistic suggests that you are practical, detail-oriented, and enjoy working with your hands. Your score in Investigative is also impressive, indicating your analytical and inquisitive nature. Additionally, your scores in Artistic and Social suggest that you have a creative and empathetic side.\n\nBased on your strengths and interests, here are some potential career options for you to consider:\n\n1. Engineering: With your strong foundation in Science and Mathematics, you may excel in engineering fields like mechanical, electrical, civil, or computer science. Your practical and analytical skills will serve you well in this field.\n2. Law: Your aptitude in Realistic and Investigative suggests that you may be well-suited for a career in law. Your attention to detail and analytical abilities will be valuable in legal research and advocacy.\n3. Medicine: Your strong marks in Science and your empathetic nature (as indicated by your Social score) may make you a good fit for a career in medicine. Your ability to understand and apply theoretical concepts will serve you well in this field.\n4. Business: Your scores in Enterprising and Conventional suggest that you may have a knack for entrepreneurship or management. Your practical and analytical skills will be valuable in these roles.\n5. Education: With your strong marks in English and your interest in teaching (as indicated by your Social score), you may consider a career in education. Your ability to communicate effectively and your empathy towards others will be valuable in this field.\n\nIn terms of streams to take in the coming 2 years, here are some recommendations based on your strengths and interests:\n\n1. Science stream: Given your strong marks in Science subjects, you may want to consider pursuing a science stream in the coming 2 years. This will provide you with a solid foundation for a career in engineering, medicine, or other scientific fields.\n2. Commerce stream: If you are interested in business or finance, a commerce stream may be a good choice for you. This will provide you with a solid foundation in accounting, economics, and other business-related subjects.\n3. Humanities stream: If you are interested in law, education, or other social sciences, a humanities stream may be a good fit for you. This will provide you with a solid foundation in language, literature, and other social science subjects.\n\nOverall, it's important to remember that these are just suggestions based on your marks and aptitude test. Ultimately, the best career option for you will depend on your personal interests, values, and goals. I recommend that you explore these options further, talk to career counselors, and gain work experience through internships or part-time jobs to gain a better understanding of what you enjoy and what you're good at.",
+        "function_call": null
+      },
+      "finish_reason": "stop"
+    }
+  ]
+}
