@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "SECRET_KEY"
 
 # Initialize LlamaAPI
-llama = LlamaAPI('LL-XkQh3GO3VGa6oq1sOtxYkLaeQfnxQvLbq6oV04jS6STjFpNh58dk5HBA0brrEY1H')
+llama = LlamaAPI('Insert_LLAMA_API_KEY_HERE')
 
 @app.route('/')
 def home():
